@@ -71,15 +71,22 @@
 		<script src='js/box2d/dynamics/joints/b2RevoluteJoint.js'></script>
 		<script src='js/box2d/dynamics/joints/b2RevoluteJointDef.js'></script>
 	<script>
-
+		var numberToAdd = null;
+		var printNumberText = ["(", "  ", "  ", "  ",") ", "  ", "  ", "  "," - ","  ","  ","  ","  "];
 		function drawWorld(world, context){
+			printTopText();
+			printNumberToAdd();
 			for(var b = world.m_bodyList; b; b = b.m_next){
 				for(var s = b.GetShapeList(); s != null; s = s.GetNext()){
 					drawShape(s, context);
-		   			addNumberToToken(s);
-		   			printNumberAtBottom(s);
+					if((s.m_type === b2Shape.e_circleShape) && (s.m_radius > 7)){
+						addNumberToToken(s);
+		   				addNumberToPrintArray(s);
+					}
+
 				}
 			}
+			printNumberAtBottom();
 			ctx.fillStyle = '#000000';
 
 		};
@@ -133,6 +140,56 @@
 	  		context.fill();
   		};
 
+  		function addNumberToPrintArray(s){
+  			//console.log('s.m_position.y: ' + s.m_position.y);
+  			if((s.m_position.y > 525)){
+  				var x = s.m_position.x;
+  				//console.log(x);
+  				switch (true){
+  					//(123)
+  					case (x >= 190 && x < 225.5):{
+  						//console.log('first number');
+  						printNumberText[1] = s.m_body.m_userData.number;
+  					}break;
+  					case (x >= 225.5 && x < 261):{
+  						//console.log('second number');
+  						printNumberText[2] = s.m_body.m_userData.number;
+  					}break;
+  					case (x >= 261 && x < 296.5):{
+  						//console.log('third number');
+  						printNumberText[3] = s.m_body.m_userData.number;
+  					}break;
+  					//456
+  					case (x >= 332 && x < 367.5):{
+  						printNumberText[5] = s.m_body.m_userData.number;
+  					}break;
+  					case (x >= 367.5 && x < 403):{
+  						printNumberText[6] = s.m_body.m_userData.number;
+  					}break;
+  					case (x >= 403 && x < 438.5):{
+  						printNumberText[7] = s.m_body.m_userData.number;
+  					}break;
+  					//7890
+  					case (x >= 474 && x < 509.5):{
+  						printNumberText[9] = s.m_body.m_userData.number;
+  					}break;
+  					case (x >= 509.5 && x < 545):{
+  						printNumberText[10] = s.m_body.m_userData.number;
+  					}break;
+  					case (x >= 545 && x < 580.5):{
+  						printNumberText[11] = s.m_body.m_userData.number;
+  					}break;
+  					case (x >= 580.5 && x < 616):{
+  						printNumberText[12] = s.m_body.m_userData.number;
+  					}break;
+  					default:{
+  						console.log('not in range');
+  					}break;
+  				}
+
+  			}
+  		};
+
   		function createToken(world, x, y, context,numberToAdd){
   			var ballSd = new b2CircleDef();
   			ballSd.density = .75;
@@ -153,17 +210,23 @@
   		function getNumber(x) {
   			return Math.floor(x / 80);
   		};
+  		function printTopText(){
+  			ctx.fillStyle = 'black';
+  			ctx.font = '54px Arial';
+  			ctx.fillText("Please enter your number: ", 75, 50);
 
-  		function printNumberAtBottom(s){
-  			if((s.m_position.y > 550) && (s.m_radius > 7)){
-  				console.log('did it');
-  				var num = s.m_body.m_userData.number;
-  				ctx.fillStyle = 'white';
-  				ctx.font = 'bold 18px Arial';
-  				ctx.fillText(num, s.m_position.x, 545);
-  			}else{
-  				return;
-  			}
+  		};
+  		function printNumberToAdd(){
+  			if(numberToAdd === null){return;}
+  			ctx.fillStyle = "orange";
+			//ctx.fillStyle = 'rgba(195, 120, 85, 0.8)';
+			ctx.font = 'bold 240px Arial';
+			ctx.fillText(numberToAdd, 320, 350);
+  		};
+  		function printNumberAtBottom(){
+  			ctx.fillStyle = 'white';
+  			ctx.font = 'bold 36px Arial';
+  			ctx.fillText(printNumberText.join(''), 280, 580);
   		};
 
   		function addNumberToToken(circle) {
@@ -294,7 +357,7 @@
 			canvasHeight = parseInt($canvasElm.height);
 			canvasTop = parseInt($canvasElm.style.top);
 			canvasLeft = parseInt($canvasElm.style.left);
-			var numberToAdd;
+			
 
 
 			//add click event later
@@ -307,13 +370,12 @@
 			Event.observe('canvas','mousedown',function(e){
 				//console.log('mousedown');
 				numberToAdd = getNumber(Event.pointerX(e));
-				context.fillStyle = 'rgba()';
-				context.font = 'bold 24px Arial';
-				context.fillText(numberToAdd, 350, 150);
+				if(Event.pointerY(e) > 200){return;}
 			});
 			Event.observe('canvas','mouseup',function(e){
 				//console.log('mouseup');
 				createToken(world,Event.pointerX(e),Event.pointerY(e),ctx, numberToAdd);
+				numberToAdd = null;
 			});
 			step();
 		});
