@@ -72,6 +72,7 @@
 		<script src='js/box2d/dynamics/joints/b2RevoluteJointDef.js'></script>
 	<script>
 		var numberToAdd = null;
+		var isMouseDown = false;
 		var printNumberText = ["(", "  ", "  ", "  ",") ", "  ", "  ", "  "," - ","  ","  ","  ","  "];
 		function drawWorld(world, context){
 			printTopText();
@@ -93,7 +94,6 @@
 
   		function drawShape(shape, context) {
 			context.strokeStyle = 'red';
-
 	  		context.beginPath();
 	  		switch (shape.m_type) {
 	  			case b2Shape.e_circleShape:
@@ -141,22 +141,17 @@
   		};
 
   		function addNumberToPrintArray(s){
-  			//console.log('s.m_position.y: ' + s.m_position.y);
   			if((s.m_position.y > 525)){
   				var x = s.m_position.x;
-  				//console.log(x);
   				switch (true){
   					//(123)
   					case (x >= 190 && x < 225.5):{
-  						//console.log('first number');
   						printNumberText[1] = s.m_body.m_userData.number;
   					}break;
   					case (x >= 225.5 && x < 261):{
-  						//console.log('second number');
   						printNumberText[2] = s.m_body.m_userData.number;
   					}break;
   					case (x >= 261 && x < 296.5):{
-  						//console.log('third number');
   						printNumberText[3] = s.m_body.m_userData.number;
   					}break;
   					//456
@@ -183,7 +178,7 @@
   						printNumberText[12] = s.m_body.m_userData.number;
   					}break;
   					default:{
-  						console.log('not in range');
+  						console.log('not in range :/');
   					}break;
   				}
 
@@ -219,7 +214,6 @@
   		function printNumberToAdd(){
   			if(numberToAdd === null){return;}
   			ctx.fillStyle = "orange";
-			//ctx.fillStyle = 'rgba(195, 120, 85, 0.8)';
 			ctx.font = 'bold 240px Arial';
 			ctx.fillText(numberToAdd, 320, 350);
   		};
@@ -283,7 +277,6 @@
   			createRow(world, 177.5, 420, 35, 14);
   			createRow(world, 195, 450, 35, 13);
   			createRow(world, 212.5, 480, 35, 12);
-  			//for(next set of pegs)
   		};
 
 
@@ -347,34 +340,21 @@
   			setTimeout('step(' + (cnt || 0) + ')', 10);
   		};
 
-		//Main entry point.. lol
+		//Main entry point..
 		Event.observe(window,'load',function() {
-			//world = createWorld();
 			ctx = $('canvas').getContext('2d');
 			world = createWorld(ctx);
-			var $canvasElm = $('canvas');
-			canvasWidth = parseInt($canvasElm.width);
-			canvasHeight = parseInt($canvasElm.height);
-			canvasTop = parseInt($canvasElm.style.top);
-			canvasLeft = parseInt($canvasElm.style.left);
 			
-
-
-			//add click event later
-			/*
-			Event.observe('canvas','click',function(e){
-				console.log('click');
-				createToken(world,Event.pointerX(e),Event.pointerY(e), ctx);
-			});
-			*/
+			//click events
 			Event.observe('canvas','mousedown',function(e){
-				//console.log('mousedown');
 				numberToAdd = getNumber(Event.pointerX(e));
+				isMouseDown = true;
 				if(Event.pointerY(e) > 200){return;}
 			});
 			Event.observe('canvas','mouseup',function(e){
-				//console.log('mouseup');
-				createToken(world,Event.pointerX(e),Event.pointerY(e),ctx, numberToAdd);
+				if(Event.pointerY(e) < 200){
+					createToken(world,Event.pointerX(e),Event.pointerY(e),ctx, numberToAdd);
+				}
 				numberToAdd = null;
 			});
 			step();
