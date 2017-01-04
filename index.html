@@ -208,7 +208,7 @@
   		function printTopText(){
   			ctx.fillStyle = 'black';
   			ctx.font = '54px Arial';
-  			ctx.fillText("Please enter your number: ", 75, 50);
+  			ctx.fillText("Please enter your number: ", 65, 50);
 
   		};
   		function printNumberToAdd(){
@@ -220,7 +220,7 @@
   		function printNumberAtBottom(){
   			ctx.fillStyle = 'white';
   			ctx.font = 'bold 36px Arial';
-  			ctx.fillText(printNumberText.join(''), 280, 580);
+  			ctx.fillText(printNumberText.join(''), 235, 580);
   		};
 
   		function addNumberToToken(circle) {
@@ -344,7 +344,12 @@
 		Event.observe(window,'load',function() {
 			ctx = $('canvas').getContext('2d');
 			world = createWorld(ctx);
-			
+			var $canvasElm = $('canvas');
+ 			canvasWidth = parseInt($canvasElm.width);
+ 			canvasHeight = parseInt($canvasElm.height);
+ 			canvasTop = parseInt($canvasElm.style.top);
+ 			canvasLeft = parseInt($canvasElm.style.left);
+
 			//click events
 			Event.observe('canvas','mousedown',function(e){
 				numberToAdd = getNumber(Event.pointerX(e));
